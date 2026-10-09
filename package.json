@@ -1,0 +1,92 @@
+{
+  "name": "meetwing",
+  "productName": "Meetwing",
+  "version": "0.1.0",
+  "description": "Meetwing - an AI meeting copilot overlay with live transcription, instant answers and screen understanding.",
+  "main": "src/main/main.js",
+  "author": "Meetwing",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test \"test/*.test.js\"",
+    "icon": "node scripts/make-icon.js",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "app.meetwing.desktop",
+    "productName": "Meetwing",
+    "copyright": "Copyright (c) Meetwing",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "artifactName": "Meetwing-${version}-${os}-${arch}.${ext}",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Meetwing listens to your microphone to transcribe your side of the conversation.",
+        "NSScreenCaptureUsageDescription": "Meetwing captures your screen to answer questions about what you are looking at and to capture meeting audio."
+      }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "category": "Office",
+      "maintainer": "Meetwing <support@meetwing.app>",
+      "synopsis": "AI meeting copilot overlay",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "syncDesktopName": true
+    }
+  },
+  "desktopName": "meetwing.desktop"
+}
