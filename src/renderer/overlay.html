@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:" />
+  <title>Meetwing</title>
+  <link rel="stylesheet" href="overlay.css" />
+</head>
+<body>
+  <div id="stage" aria-hidden="true">
+    <div id="trail"></div>
+    <div id="plane">
+      <svg id="jet" viewBox="0 0 320 110" xmlns="http://www.w3.org/2000/svg" role="img">
+        <defs>
+          <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset="0.6" stop-color="#eef3fa"/>
+            <stop offset="1" stop-color="#c9d6e8"/>
+          </linearGradient>
+          <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4aa8ff"/>
+            <stop offset="1" stop-color="#1673d9"/>
+          </linearGradient>
+          <clipPath id="hull">
+            <path d="M44 48 C96 30 214 30 280 46 C304 52 314 59 307 64 C300 70 280 73 256 73 L76 73 C56 73 44 63 44 48 Z"/>
+          </clipPath>
+        </defs>
+        <!-- landing gear -->
+        <g fill="#2b3446">
+          <rect x="226" y="72" width="3" height="9"/><circle cx="227.5" cy="84" r="5.5"/>
+          <rect x="112" y="72" width="3" height="9"/><circle cx="113.5" cy="84" r="5.5"/>
+          <circle cx="227.5" cy="84" r="2" fill="#9fb0c8"/><circle cx="113.5" cy="84" r="2" fill="#9fb0c8"/>
+        </g>
+        <!-- far wing -->
+        <path d="M150 64 L214 64 L176 92 L146 92 Z" fill="#9db4d4"/>
+        <!-- tail fin + stabilizer -->
+        <path d="M52 50 L34 10 L66 10 L96 44 Z" fill="url(#blue)"/>
+        <path d="M44 48 L22 40 L26 34 L70 44 Z" fill="#c9d6e8"/>
+        <!-- rear engine -->
+        <rect x="58" y="30" width="46" height="17" rx="8.5" fill="#aebdd3"/>
+        <ellipse cx="60" cy="38.5" rx="3.5" ry="7" fill="#46526a"/>
+        <!-- fuselage -->
+        <path d="M44 48 C96 30 214 30 280 46 C304 52 314 59 307 64 C300 70 280 73 256 73 L76 73 C56 73 44 63 44 48 Z" fill="url(#body)"/>
+        <g clip-path="url(#hull)">
+          <path d="M266 20 C284 40 292 60 276 90 L330 90 L330 20 Z" fill="url(#blue)"/>
+          <rect x="40" y="60" width="240" height="5" fill="#2f8cf0"/>
+          <rect x="40" y="66" width="240" height="2" fill="#7bbcff"/>
+        </g>
+        <!-- windows -->
+        <g fill="#27344d">
+          <rect x="112" y="47" width="7" height="8" rx="3"/><rect x="127" y="47" width="7" height="8" rx="3"/>
+          <rect x="142" y="47" width="7" height="8" rx="3"/><rect x="157" y="47" width="7" height="8" rx="3"/>
+          <rect x="172" y="47" width="7" height="8" rx="3"/><rect x="187" y="47" width="7" height="8" rx="3"/>
+          <rect x="202" y="47" width="7" height="8" rx="3"/><rect x="217" y="47" width="7" height="8" rx="3"/>
+          <path d="M243 41 C255 41 266 44 272 49 L243 49 Z"/>
+        </g>
+        <!-- near wing + engine -->
+        <path d="M128 62 L206 62 L160 98 L118 98 Z" fill="#c3d2e6"/>
+        <path d="M128 62 L206 62 L196 69 L124 69 Z" fill="#e6edf7"/>
+        <rect x="146" y="82" width="46" height="16" rx="8" fill="#9db4d4"/>
+        <ellipse cx="190" cy="90" rx="3.5" ry="7" fill="#46526a"/>
+        <path d="M248 73 L246 60" stroke="#c6d3e6" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <div id="card">
+      <div id="card-label"></div>
+      <div id="card-title"></div>
+      <div id="card-source"></div>
+    </div>
+  </div>
+  <script src="overlay.js"></script>
+</body>
+</html>

@@ -1,40 +1,19 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const DEFAULTS = {
-  mode: 'assist',
-  customInstructions: '',
-  ai: {
-    provider: 'openai', // openai | anthropic | ollama | custom
-    baseUrl: '',
-    model: '',
+  reminders: { leadMinutes: [10, 5], atStart: false },
+  flight: {
+    seconds: 9, // total time on screen
+    size: 1, // 0.6 - 1.6 multiplier
+    direction: 'ltr', // ltr | rtl | alternate
+    display: 'cursor', // cursor | primary
+    sound: false,
   },
-  stt: {
-    baseUrl: 'https://api.openai.com/v1',
-    model: 'whisper-1',
-    language: '',
-  },
-  audio: {
-    micDeviceId: 'default',
-    captureMic: true,
-    captureSystem: true,
-    chunkSeconds: 6,
-  },
-  ui: {
-    opacity: 0.92,
-    stealth: true, // hide the window from screen sharing / recordings
-    alwaysOnTop: true,
-  },
-};
-
-const SECRET_KEYS = ['aiApiKey', 'sttApiKey'];
-
-const PROVIDER_PRESETS = {
-  openai: { baseUrl: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
-  anthropic: { baseUrl: 'https://api.anthropic.com', model: 'claude-sonnet-5-5' },
-  ollama: { baseUrl: 'http://localhost:11434/v1', model: 'llama3.2-vision' },
-  custom: { baseUrl: '', model: '' },
+  general: { launchAtLogin: false, showInTray: true },
+  restUntil: 0, // epoch ms; reminders are paused until then (Infinity is stored as -1)
 };
 
 function isPlainObject(v) {
@@ -44,23 +23,25 @@ function isPlainObject(v) {
 function deepMerge(base, patch) {
   const out = { ...base };
   for (const [k, v] of Object.entries(patch || {})) {
-    if (isPlainObject(v) && isPlainObject(base[k])) out[k] = deepMerge(base[k], v);
-    else if (k in base || k === 'customInstructions') out[k] = v;
+    if (!(k in base)) continue;
+    out[k] = isPlainObject(v) && isPlainObject(base[k]) ? deepMerge(base[k], v) : v;
   }
   return out;
 }
 
+const clone = (o) => JSON.parse(JSON.stringify(o));
+
 /**
- * JSON settings file with encrypted API keys.
- * `crypto` is { encrypt(str)->str, decrypt(str)->str, available() } so Electron's
- * safeStorage can be swapped for a stub in tests.
+ * Settings + calendar list. Calendar feed URLs are effectively passwords (Google's "secret
+ * address"), so the whole calendar list is stored encrypted when the OS offers encryption.
+ * `cipher` is { available, encrypt, decrypt } so Electron's safeStorage can be stubbed in tests.
  */
 class SettingsStore {
-  constructor(dir, crypto) {
+  constructor(dir, cipher) {
     this.file = path.join(dir, 'settings.json');
-    this.crypto = crypto || { available: () => false, encrypt: (s) => s, decrypt: (s) => s };
-    this.data = structuredCloneSafe(DEFAULTS);
-    this.secrets = { aiApiKey: '', sttApiKey: '' };
+    this.cipher = cipher || { available: () => false, encrypt: (s) => s, decrypt: (s) => s };
+    this.data = clone(DEFAULTS);
+    this.calendars = []; // [{ id, name, url }]
     this._load();
   }
 
@@ -72,93 +53,98 @@ class SettingsStore {
       return;
     }
     this.data = deepMerge(DEFAULTS, raw.settings || {});
-    for (const key of SECRET_KEYS) {
-      const stored = raw.secrets && raw.secrets[key];
-      if (!stored) continue;
-      try {
-        this.secrets[key] = stored.enc ? this.crypto.decrypt(stored.value) : stored.value;
-      } catch {
-        this.secrets[key] = '';
-      }
+    this._clamp();
+    const c = raw.calendars;
+    if (!c || !c.value) return;
+    try {
+      const json = c.enc ? this.cipher.decrypt(c.value) : c.value;
+      const list = JSON.parse(json);
+      if (Array.isArray(list)) this.calendars = list.filter((x) => x && x.id && x.url);
+    } catch {
+      this.calendars = [];
     }
   }
 
   _save() {
-    const secrets = {};
-    for (const key of SECRET_KEYS) {
-      const val = this.secrets[key];
-      if (!val) continue;
-      if (this.crypto.available()) secrets[key] = { enc: true, value: this.crypto.encrypt(val) };
-      else secrets[key] = { enc: false, value: val };
-    }
+    const json = JSON.stringify(this.calendars);
+    const enc = this.cipher.available();
+    const doc = {
+      settings: this.data,
+      calendars: { enc, value: enc ? this.cipher.encrypt(json) : json },
+    };
     fs.mkdirSync(path.dirname(this.file), { recursive: true });
     const tmp = this.file + '.tmp';
-    fs.writeFileSync(tmp, JSON.stringify({ settings: this.data, secrets }, null, 2), { mode: 0o600 });
+    fs.writeFileSync(tmp, JSON.stringify(doc, null, 2), { mode: 0o600 });
     fs.renameSync(tmp, this.file);
   }
 
-  /** Settings safe to send to the renderer: no secrets, only whether they are set. */
+  _clamp() {
+    const r = this.data.reminders;
+    const leads = (Array.isArray(r.leadMinutes) ? r.leadMinutes : DEFAULTS.reminders.leadMinutes)
+      .map((n) => Math.round(Number(n)))
+      .filter((n) => Number.isFinite(n) && n > 0 && n <= 24 * 60);
+    r.leadMinutes = [...new Set(leads)].sort((a, b) => b - a).slice(0, 6);
+    r.atStart = !!r.atStart;
+    const f = this.data.flight;
+    f.seconds = Math.min(30, Math.max(5, Number(f.seconds) || DEFAULTS.flight.seconds));
+    f.size = Math.min(1.6, Math.max(0.6, Number(f.size) || 1));
+    if (!['ltr', 'rtl', 'alternate'].includes(f.direction)) f.direction = 'ltr';
+    if (!['cursor', 'primary'].includes(f.display)) f.display = 'cursor';
+    f.sound = !!f.sound;
+  }
+
+  /** Lead times the scheduler should use (includes 0 when "at start" is on). */
+  leads() {
+    const r = this.data.reminders;
+    return r.atStart ? [...r.leadMinutes, 0] : [...r.leadMinutes];
+  }
+
   getPublic() {
     return {
-      ...structuredCloneSafe(this.data),
-      hasAiKey: !!this.secrets.aiApiKey,
-      hasSttKey: !!this.secrets.sttApiKey,
-      keysEncrypted: this.crypto.available(),
-      presets: PROVIDER_PRESETS,
+      ...clone(this.data),
+      calendars: this.calendars.map((c) => ({ id: c.id, name: c.name, host: hostOf(c.url) })),
+      encrypted: this.cipher.available(),
     };
   }
 
-  /** Effective AI config including secrets, for use in the main process only. */
-  getAi() {
-    const ai = this.data.ai;
-    const preset = PROVIDER_PRESETS[ai.provider] || PROVIDER_PRESETS.custom;
-    return {
-      provider: ai.provider,
-      baseUrl: ai.baseUrl || preset.baseUrl,
-      model: ai.model || preset.model,
-      apiKey: this.secrets.aiApiKey,
-    };
-  }
-
-  getStt() {
-    const stt = this.data.stt;
-    return {
-      baseUrl: stt.baseUrl || DEFAULTS.stt.baseUrl,
-      model: stt.model || DEFAULTS.stt.model,
-      language: stt.language,
-      // Fall back to the AI key when both use OpenAI.
-      apiKey:
-        this.secrets.sttApiKey ||
-        (this.data.ai.provider === 'openai' ? this.secrets.aiApiKey : ''),
-    };
-  }
-
-  /**
-   * Applies a patch. Secret fields: `aiApiKey` / `sttApiKey` set a new key,
-   * `null` clears it, `undefined`/'' leaves it unchanged.
-   */
   update(patch = {}) {
-    const { aiApiKey, sttApiKey, ...rest } = patch;
-    this.data = deepMerge(this.data, rest);
+    this.data = deepMerge(this.data, patch);
     this._clamp();
-    for (const [key, val] of [['aiApiKey', aiApiKey], ['sttApiKey', sttApiKey]]) {
-      if (val === null) this.secrets[key] = '';
-      else if (typeof val === 'string' && val.trim()) this.secrets[key] = val.trim();
-    }
     this._save();
     return this.getPublic();
   }
 
-  _clamp() {
-    const a = this.data.audio;
-    a.chunkSeconds = Math.min(30, Math.max(2, Number(a.chunkSeconds) || DEFAULTS.audio.chunkSeconds));
-    const u = this.data.ui;
-    u.opacity = Math.min(1, Math.max(0.3, Number(u.opacity) || DEFAULTS.ui.opacity));
+  addCalendar({ name, url }) {
+    const cal = { id: crypto.randomUUID(), name: String(name || '').trim().slice(0, 40) || 'Calendar', url };
+    this.calendars.push(cal);
+    this._save();
+    return cal;
+  }
+
+  removeCalendar(id) {
+    const before = this.calendars.length;
+    this.calendars = this.calendars.filter((c) => c.id !== id);
+    if (this.calendars.length !== before) this._save();
+    return this.calendars.length !== before;
+  }
+
+  setRestUntil(ms) {
+    this.data.restUntil = ms;
+    this._save();
+  }
+
+  isResting(now = Date.now()) {
+    const r = this.data.restUntil;
+    return r === -1 || r > now;
   }
 }
 
-function structuredCloneSafe(o) {
-  return JSON.parse(JSON.stringify(o));
+function hostOf(url) {
+  try {
+    return new URL(url).host;
+  } catch {
+    return '';
+  }
 }
 
-module.exports = { SettingsStore, DEFAULTS, PROVIDER_PRESETS };
+module.exports = { SettingsStore, DEFAULTS };

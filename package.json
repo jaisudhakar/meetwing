@@ -2,7 +2,7 @@
   "name": "meetwing",
   "productName": "Meetwing",
   "version": "0.1.0",
-  "description": "Meetwing - an AI meeting copilot overlay with live transcription, instant answers and screen understanding.",
+  "description": "Meetwing - a jet that flies across your screen to remind you of upcoming meetings. Nudge. Fly. Rest.",
   "homepage": "https://github.com/jaisudhakar/meetwing",
   "repository": {
     "type": "git",
@@ -61,8 +61,7 @@
         }
       ],
       "extendInfo": {
-        "NSMicrophoneUsageDescription": "Meetwing listens to your microphone to transcribe your side of the conversation.",
-        "NSScreenCaptureUsageDescription": "Meetwing captures your screen to answer questions about what you are looking at and to capture meeting audio."
+        "LSUIElement": true
       }
     },
     "win": {
@@ -88,7 +87,7 @@
     "linux": {
       "category": "Office",
       "maintainer": "Meetwing <support@meetwing.app>",
-      "synopsis": "AI meeting copilot overlay",
+      "synopsis": "Flying meeting reminders",
       "target": [
         "AppImage",
         "deb"
@@ -96,5 +95,8 @@
       "syncDesktopName": true
     }
   },
-  "desktopName": "meetwing.desktop"
+  "desktopName": "meetwing.desktop",
+  "dependencies": {
+    "ical.js": "^2.2.1"
+  }
 }

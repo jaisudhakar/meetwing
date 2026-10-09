@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meetwing</title>
+  <link rel="stylesheet" href="settings.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="mark" aria-hidden="true"></div>
+      <div>
+        <h1>Meetwing</h1>
+        <p class="tag"><b>Nudge.</b> Fly. Rest.</p>
+      </div>
+      <span class="spacer"></span>
+      <span id="state" class="pill">Active</span>
+    </header>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Up next</h2>
+        <span class="spacer"></span>
+        <button id="btn-nudge" class="primary">Nudge now</button>
+        <button id="btn-test">Test flight</button>
+        <select id="rest" aria-label="Rest">
+          <option value="">Rest…</option>
+          <option value="1h">Rest for 1 hour</option>
+          <option value="tomorrow">Rest until tomorrow</option>
+          <option value="forever">Rest until I resume</option>
+          <option value="off">Resume reminders</option>
+        </select>
+      </div>
+      <ul id="upcoming" class="events"></ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Calendars</h2><span class="spacer"></span><button id="btn-refresh" class="mini">Refresh</button></div>
+      <ul id="calendars" class="cals"></ul>
+      <form id="add-cal" class="add" autocomplete="off">
+        <input name="name" type="text" maxlength="40" placeholder="Name (e.g. Google Calendar)" aria-label="Calendar name" />
+        <input name="url" type="text" placeholder="Paste the calendar's iCal (.ics) or webcal:// link" aria-label="Calendar URL" required />
+        <button type="submit" class="primary">Add</button>
+      </form>
+      <p id="add-msg" class="msg" role="status"></p>
+      <details>
+        <summary>Where do I find the link?</summary>
+        <ul class="help">
+          <li><b>Google Calendar:</b> Settings &rarr; your calendar &rarr; <i>Integrate calendar</i> &rarr; <i>Secret address in iCal format</i>.</li>
+          <li><b>Outlook / Microsoft 365:</b> Calendar settings &rarr; Shared calendars &rarr; Publish a calendar &rarr; ICS link.</li>
+          <li><b>Apple iCloud:</b> Calendar &rarr; share calendar &rarr; Public Calendar &rarr; copy the webcal link.</li>
+          <li><b>Calendly:</b> connect your Google/Outlook calendar in Calendly; bookings then appear in that feed, and Meetwing labels them &ldquo;Calendly&rdquo;.</li>
+        </ul>
+        <p class="hint">These links work like passwords. Meetwing stores them encrypted on this computer and only contacts the calendar server.</p>
+      </details>
+    </section>
+
+    <section class="card">
+      <h2>Reminders</h2>
+      <label>Fly this many minutes before a meeting
+        <input id="leads" type="text" placeholder="10, 5" />
+      </label>
+      <label class="check"><input id="atStart" type="checkbox" /> Also fly when the meeting starts</label>
+      <p class="hint">All-day events are ignored.</p>
+    </section>
+
+    <section class="card">
+      <h2>Flight</h2>
+      <div class="grid">
+        <label>Time on screen: <b id="secondsVal"></b>
+          <input id="seconds" type="range" min="5" max="20" step="1" /></label>
+        <label>Jet size: <b id="sizeVal"></b>
+          <input id="size" type="range" min="0.6" max="1.6" step="0.1" /></label>
+        <label>Direction
+          <select id="direction">
+            <option value="ltr">Left to right</option>
+            <option value="rtl">Right to left</option>
+            <option value="alternate">Alternate</option>
+          </select></label>
+        <label>Show on
+          <select id="display">
+            <option value="cursor">Screen with my mouse</option>
+            <option value="primary">Main screen</option>
+          </select></label>
+      </div>
+      <label class="check"><input id="sound" type="checkbox" /> Soft whoosh sound</label>
+    </section>
+
+    <section class="card">
+      <h2>General</h2>
+      <label class="check"><input id="launchAtLogin" type="checkbox" /> Start Meetwing when I sign in</label>
+      <ul class="keys">
+        <li><kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> nudge: fly the next meeting now</li>
+        <li><kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> join the next meeting's call link</li>
+      </ul>
+      <p class="hint">Closing this window keeps Meetwing running in your menu bar / system tray. <span id="ver"></span></p>
+    </section>
+  </div>
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="../shared/scheduler.js"></script>
+  <script src="settings.js"></script>
+</body>
+</html>
