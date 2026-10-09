@@ -3,6 +3,14 @@
   "productName": "Meetwing",
   "version": "0.1.0",
   "description": "Meetwing - an AI meeting copilot overlay with live transcription, instant answers and screen understanding.",
+  "homepage": "https://github.com/jaisudhakar/meetwing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jaisudhakar/meetwing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jaisudhakar/meetwing/issues"
+  },
   "main": "src/main/main.js",
   "author": "Meetwing",
   "license": "MIT",
