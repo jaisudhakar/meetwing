@@ -46,6 +46,13 @@ npm start
 
 Open **Settings**, paste an API key, and press **Listen**.
 
+**Linux:** if Electron aborts with `The SUID sandbox helper binary was found, but is not configured
+correctly`, `npm start` already handles it by falling back to `--no-sandbox` for development. To keep
+the sandbox on, run
+`sudo chown root:root node_modules/electron/dist/chrome-sandbox && sudo chmod 4755 node_modules/electron/dist/chrome-sandbox`.
+The `.deb` package configures this for you. On Ubuntu 23.10+/24.04 the AppImage may need
+`./Meetwing-*.AppImage --no-sandbox` because of AppArmor's unprivileged-userns restriction; prefer the `.deb`.
+
 ## Build installers
 
 Build on the OS you are targeting (electron-builder does not cross-compile native installers
