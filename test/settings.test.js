@@ -60,3 +60,17 @@ test('rest mode', () => {
   s.setRestUntil(-1);
   assert.strictEqual(s.isResting(1e15), true);
 });
+
+test('hand-made reminders persist, cannot be injected via update(), and old one-offs are pruned', () => {
+  const dir = tmp();
+  const s = new SettingsStore(dir, cipher);
+  const day = 24 * 3600 * 1000;
+  const a = s.addReminder({ title: 'Old', start: 1000, repeat: 'none', mode: 'attime', note: '' });
+  s.addReminder({ title: 'Daily', start: 1000, repeat: 'daily', mode: 'attime', note: '' });
+  s.update({ manual: [{ id: 'x', title: 'evil', start: 5 }] });
+  assert.deepStrictEqual(new SettingsStore(dir, cipher).data.manual.map((m) => m.title), ['Old', 'Daily']);
+  assert.strictEqual(s.pruneReminders(2 * day), true);
+  assert.deepStrictEqual(s.data.manual.map((m) => m.title), ['Daily']);
+  assert.strictEqual(s.removeReminder(a.id), false);
+  assert.strictEqual(s.getPublic().calendars.length, 0); // works with no calendar at all
+});

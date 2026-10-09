@@ -7,7 +7,8 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   const MIN = 60 * 1000;
 
-  function reminderLabel(minutes) {
+  function reminderLabel(minutes, kind) {
+    if (kind === 'reminder') return minutes <= 0 ? 'Reminder' : `In ${minutes} min`;
     if (minutes <= 0) return 'Starting now';
     return `Starting in ${minutes} min`;
   }
@@ -51,13 +52,14 @@
     due(now) {
       const out = [];
       for (const ev of this.events) {
-        for (const lead of this.leads) {
+        const leads = ev.leads ? ev.leads : this.leads; // hand-made reminders may fix their own
+        for (const lead of leads) {
           const at = ev.start - lead * MIN;
           if (now < at || now >= at + this.graceMs || now > ev.end) continue;
           const key = `${ev.uid}#${lead}`;
           if (this.fired.has(key)) continue;
           this.fired.add(key);
-          out.push({ event: ev, minutes: lead, label: reminderLabel(lead) });
+          out.push({ event: ev, minutes: lead, label: reminderLabel(lead, ev.kind) });
         }
       }
       return out;

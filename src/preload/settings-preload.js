@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld('meetwing', {
   addCalendar: invoke('calendar:add'),
   removeCalendar: invoke('calendar:remove'),
   refreshCalendars: invoke('calendar:refresh'),
+  addReminder: invoke('reminder:add'),
+  removeReminder: invoke('reminder:remove'),
   upcoming: invoke('events:upcoming'),
   testFlight: invoke('flight:test'),
   nudge: invoke('nudge'),

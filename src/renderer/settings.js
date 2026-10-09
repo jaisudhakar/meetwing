@@ -26,12 +26,10 @@ async function renderUpcoming() {
   const list = $('upcoming');
   const events = await meetwing.upcoming();
   list.textContent = '';
-  if (!current.calendars.length) {
-    list.innerHTML = '<li class="empty">Add a calendar below and your next meetings will show up here.</li>';
-    return;
-  }
   if (!events.length) {
-    list.innerHTML = '<li class="empty">No meetings in the next 24 hours. Enjoy the quiet.</li>';
+    list.innerHTML = current.calendars.length || current.manual.length
+      ? '<li class="empty">Nothing in the next 24 hours. Enjoy the quiet.</li>'
+      : '<li class="empty">Nothing yet. Add a reminder below. A calendar is optional.</li>';
     return;
   }
   const now = Date.now();
@@ -61,11 +59,39 @@ async function renderUpcoming() {
   }
 }
 
+const REPEAT_TEXT = { none: 'Once', daily: 'Every day', weekdays: 'Weekdays', weekly: 'Every week' };
+
+function renderReminders() {
+  const list = $('reminders');
+  list.textContent = '';
+  const items = current.manual.slice().sort((a, b) => a.start - b.start);
+  for (const r of items) {
+    const li = document.createElement('li');
+    const name = document.createElement('span');
+    name.className = 'name';
+    name.textContent = r.title;
+    const when = document.createElement('span');
+    when.className = 'host';
+    const day = new Date(r.start).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+    const time = new Date(r.start).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    when.textContent = r.repeat === 'none' ? `${day} ${time}` : `${REPEAT_TEXT[r.repeat]} at ${time}`;
+    const rm = document.createElement('button');
+    rm.className = 'mini';
+    rm.textContent = 'Remove';
+    rm.addEventListener('click', async () => {
+      current = await meetwing.removeReminder(r.id);
+      render();
+    });
+    li.append(name, when, rm);
+    list.append(li);
+  }
+}
+
 function renderCalendars() {
   const list = $('calendars');
   list.textContent = '';
   if (!current.calendars.length) {
-    list.innerHTML = '<li class="empty">No calendars yet.</li>';
+    list.innerHTML = '<li class="empty">No calendar connected. That is fine; reminders above work on their own.</li>';
   }
   for (const c of current.calendars) {
     const li = document.createElement('li');
@@ -103,6 +129,7 @@ function render() {
   $('sound').checked = current.flight.sound;
   $('launchAtLogin').checked = current.general.launchAtLogin;
   $('ver').textContent = `v${current.version}`;
+  renderReminders();
   renderCalendars();
   renderUpcoming();
 }
@@ -177,6 +204,53 @@ $('add-cal').addEventListener('submit', async (e) => {
   form.reset();
   msg.className = 'msg ok';
   msg.textContent = `Added. Found ${res.found} meeting${res.found === 1 ? '' : 's'} in the next 7 days.`;
+  render();
+});
+
+// ------------------------------------------------------------ new reminder form
+
+const remForm = $('add-rem');
+const pad = (n) => String(n).padStart(2, '0');
+const toLocalInput = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+
+function setDefaultTime() {
+  remForm.when.value = toLocalInput(new Date(Date.now() + 10 * 60000));
+}
+setDefaultTime();
+
+remForm.querySelectorAll('[data-in]').forEach((b) =>
+  b.addEventListener('click', () => (remForm.when.value = toLocalInput(new Date(Date.now() + Number(b.dataset.in) * 60000))))
+);
+remForm.querySelector('[data-tomorrow]').addEventListener('click', (e) => {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(Number(e.target.dataset.tomorrow), 0, 0, 0);
+  remForm.when.value = toLocalInput(d);
+});
+
+remForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const msg = $('rem-msg');
+  const when = new Date(remForm.when.value).getTime();
+  const res = await meetwing.addReminder({
+    title: remForm.title.value,
+    whenMs: when,
+    repeat: remForm.repeat.value,
+    mode: remForm.mode.value,
+    note: remForm.note.value,
+  });
+  if (!res.ok) {
+    msg.className = 'msg err';
+    msg.textContent = res.error;
+    return;
+  }
+  current = res.settings;
+  remForm.title.value = '';
+  remForm.note.value = '';
+  setDefaultTime();
+  msg.className = 'msg ok';
+  msg.textContent = 'Reminder added.';
+  setTimeout(() => (msg.textContent = ''), 2500);
   render();
 });
 

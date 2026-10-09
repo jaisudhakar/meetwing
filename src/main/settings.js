@@ -12,8 +12,9 @@ const DEFAULTS = {
     display: 'cursor', // cursor | primary
     sound: false,
   },
-  general: { launchAtLogin: false, showInTray: true },
-  restUntil: 0, // epoch ms; reminders are paused until then (Infinity is stored as -1)
+  general: { launchAtLogin: false, showInTray: true, onboarded: false },
+  restUntil: 0, // epoch ms; reminders are paused until then (-1 = until resumed)
+  manual: [], // hand-made reminders; edited only through addReminder/removeReminder
 };
 
 function isPlainObject(v) {
@@ -91,6 +92,9 @@ class SettingsStore {
     if (!['ltr', 'rtl', 'alternate'].includes(f.direction)) f.direction = 'ltr';
     if (!['cursor', 'primary'].includes(f.display)) f.display = 'cursor';
     f.sound = !!f.sound;
+    this.data.manual = (Array.isArray(this.data.manual) ? this.data.manual : [])
+      .filter((m) => m && m.id && m.title && Number.isFinite(m.start))
+      .slice(0, 200);
   }
 
   /** Lead times the scheduler should use (includes 0 when "at start" is on). */
@@ -108,7 +112,8 @@ class SettingsStore {
   }
 
   update(patch = {}) {
-    this.data = deepMerge(this.data, patch);
+    const { manual: _ignored, ...safe } = patch; // reminders change only via add/remove
+    this.data = deepMerge(this.data, safe);
     this._clamp();
     this._save();
     return this.getPublic();
@@ -126,6 +131,35 @@ class SettingsStore {
     this.calendars = this.calendars.filter((c) => c.id !== id);
     if (this.calendars.length !== before) this._save();
     return this.calendars.length !== before;
+  }
+
+  addReminder(item) {
+    const rem = { id: crypto.randomUUID(), ...item };
+    this.data.manual.push(rem);
+    this._save();
+    return rem;
+  }
+
+  removeReminder(id) {
+    const before = this.data.manual.length;
+    this.data.manual = this.data.manual.filter((m) => m.id !== id);
+    if (this.data.manual.length !== before) this._save();
+    return this.data.manual.length !== before;
+  }
+
+  /** Drops finished one-off reminders (older than a day). Returns true if anything changed. */
+  pruneReminders(now = Date.now()) {
+    const keep = this.data.manual.filter((m) => m.repeat !== 'none' || m.start > now - 24 * 3600 * 1000);
+    if (keep.length === this.data.manual.length) return false;
+    this.data.manual = keep;
+    this._save();
+    return true;
+  }
+
+  setOnboarded() {
+    if (this.data.general.onboarded) return;
+    this.data.general.onboarded = true;
+    this._save();
   }
 
   setRestUntil(ms) {

@@ -38,7 +38,39 @@
     </section>
 
     <section class="card">
-      <div class="card-head"><h2>Calendars</h2><span class="spacer"></span><button id="btn-refresh" class="mini">Refresh</button></div>
+      <h2>New reminder</h2>
+      <form id="add-rem" class="remform" autocomplete="off">
+        <input name="title" type="text" maxlength="120" placeholder="What should I remind you about?" aria-label="Reminder title" required />
+        <div class="row3">
+          <input name="when" type="datetime-local" aria-label="Date and time" required />
+          <select name="repeat" aria-label="Repeat">
+            <option value="none">Once</option>
+            <option value="daily">Every day</option>
+            <option value="weekdays">Weekdays</option>
+            <option value="weekly">Every week</option>
+          </select>
+          <select name="mode" aria-label="When to fly">
+            <option value="attime">Fly at that time</option>
+            <option value="lead">Fly ahead, like meetings</option>
+          </select>
+        </div>
+        <div class="quick" aria-label="Quick times">
+          <button type="button" class="mini" data-in="10">In 10 min</button>
+          <button type="button" class="mini" data-in="30">In 30 min</button>
+          <button type="button" class="mini" data-in="60">In 1 hour</button>
+          <button type="button" class="mini" data-tomorrow="9">Tomorrow 9:00</button>
+        </div>
+        <div class="add2">
+          <input name="note" type="text" maxlength="60" placeholder="Small text under the title (optional)" aria-label="Note" />
+          <button type="submit" class="primary">Add reminder</button>
+        </div>
+      </form>
+      <p id="rem-msg" class="msg" role="status"></p>
+      <ul id="reminders" class="cals"></ul>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Calendars <span class="opt">optional</span></h2><span class="spacer"></span><button id="btn-refresh" class="mini">Refresh</button></div>
       <ul id="calendars" class="cals"></ul>
       <form id="add-cal" class="add" autocomplete="off">
         <input name="name" type="text" maxlength="40" placeholder="Name (e.g. Google Calendar)" aria-label="Calendar name" />
@@ -59,12 +91,12 @@
     </section>
 
     <section class="card">
-      <h2>Reminders</h2>
+      <h2>Before calendar meetings</h2>
       <label>Fly this many minutes before a meeting
         <input id="leads" type="text" placeholder="10, 5" />
       </label>
       <label class="check"><input id="atStart" type="checkbox" /> Also fly when the meeting starts</label>
-      <p class="hint">All-day events are ignored.</p>
+      <p class="hint">Only used for calendar events (and reminders set to &ldquo;fly ahead&rdquo;). All-day events are ignored.</p>
     </section>
 
     <section class="card">

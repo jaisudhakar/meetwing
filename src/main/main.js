@@ -17,6 +17,7 @@ const {
 
 const { SettingsStore } = require('./settings');
 const { loadEvents, checkCalendar } = require('./calendar');
+const { makeItem, expandManual } = require('./manual');
 const { Scheduler, reminderLabel, relativeTime } = require('../shared/scheduler');
 
 const ROOT = path.join(__dirname, '..', '..');
@@ -39,6 +40,7 @@ let flightQueue = [];
 let flying = false;
 let flightCount = 0;
 let calendarErrors = [];
+let calendarEvents = []; // last successful fetch, so reminder edits need no network
 let lastTraySignature = '';
 
 if (!app.requestSingleInstanceLock()) {
@@ -140,7 +142,7 @@ ipcMain.on('overlay:done', (e) => {
 });
 
 function flightFor(ev, minutes) {
-  return { label: reminderLabel(minutes), title: ev.title, source: ev.source, link: ev.link };
+  return { label: reminderLabel(minutes, ev.kind), title: ev.title, source: ev.source, link: ev.link };
 }
 
 /** "Nudge": fly the next meeting's reminder right now. */
@@ -166,17 +168,31 @@ function openLink(url) {
 
 // ------------------------------------------------------------------ calendars + ticking
 
+/** Calendar feeds + hand-made reminders -> the scheduler. Calendars are optional. */
+function rebuildEvents() {
+  const now = Date.now();
+  const manual = expandManual(settings.data.manual, { fromMs: now - 60 * MIN, toMs: now + HORIZON_MS });
+  scheduler.setEvents([...calendarEvents, ...manual]);
+  lastTraySignature = '';
+  updateTray();
+}
+
 async function refreshCalendars() {
   const now = Date.now();
-  const { events, errors } = await loadEvents(settings.calendars, { fromMs: now - 60 * MIN, toMs: now + HORIZON_MS });
-  calendarErrors = errors;
-  scheduler.setEvents(events);
-  updateTray();
-  return { events, errors };
+  if (settings.calendars.length) {
+    const { events, errors } = await loadEvents(settings.calendars, { fromMs: now - 60 * MIN, toMs: now + HORIZON_MS });
+    calendarEvents = events;
+    calendarErrors = errors;
+  } else {
+    calendarEvents = [];
+    calendarErrors = [];
+  }
+  rebuildEvents();
 }
 
 function tick() {
   const now = Date.now();
+  if (settings.pruneReminders(now)) sendToSettings('settings:changed');
   const due = scheduler.due(now); // always consume, so reminders from a rest period do not replay
   if (!settings.isResting(now)) for (const d of due) enqueueFlight(flightFor(d.event, d.minutes));
   if (settings.data.restUntil > 0 && settings.data.restUntil <= now) {
@@ -203,9 +219,8 @@ function updateTray() {
   if (sig === lastTraySignature) return;
   lastTraySignature = sig;
 
-  let header = 'No upcoming meetings';
-  if (!settings.calendars.length) header = 'Add a calendar to get started';
-  else if (next) header = `${next.title} - ${next.start <= now ? 'now' : relativeTime(next.start - now)}`;
+  let header = 'Nothing coming up';
+  if (next) header = `${next.title} - ${next.start <= now ? 'now' : relativeTime(next.start - now)}`;
 
   const rest = settings.data.restUntil;
   const menu = Menu.buildFromTemplate([
@@ -356,6 +371,20 @@ function setupIpc() {
     await refreshCalendars();
     return publicSettings();
   });
+  ipcMain.handle('reminder:add', (_e, input) => {
+    try {
+      settings.addReminder(makeItem(input));
+      rebuildEvents();
+      return { ok: true, settings: publicSettings() };
+    } catch (err) {
+      return { ok: false, error: err.message };
+    }
+  });
+  ipcMain.handle('reminder:remove', (_e, id) => {
+    settings.removeReminder(id);
+    rebuildEvents();
+    return publicSettings();
+  });
   ipcMain.handle('calendar:refresh', async () => {
     await refreshCalendars();
     return publicSettings();
@@ -413,8 +442,9 @@ app.whenReady().then(async () => {
   setInterval(() => refreshCalendars().catch(() => {}), REFRESH_MS);
   powerMonitor.on('resume', () => setTimeout(() => refreshCalendars().catch(() => {}), 3000));
 
-  // First run (or no tray to click): show the settings window so people can add a calendar.
-  if (!settings.calendars.length || !tray || process.argv.includes('--settings')) openSettings();
+  // First run (or no tray to click): show the settings window once so people can set up a reminder.
+  if (!settings.data.general.onboarded || !tray || process.argv.includes('--settings')) openSettings();
+  settings.setOnboarded();
 
   app.on('activate', openSettings);
 });

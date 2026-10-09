@@ -12,7 +12,10 @@ macOS and Ubuntu/Linux** (Electron).
 
 - **Flying reminders** - the jet glides in, hovers so you can read the card, and leaves. Pick how
   long it stays, how big it is, which direction it flies, and which screen it appears on.
-- **Your calendars** - add any iCalendar (`.ics` / `webcal://`) feed: Google Calendar, Outlook /
+- **Simple reminders, no calendar needed** - type what to remember, pick a time, and optionally
+  repeat it every day, on weekdays or weekly. The jet flies at that time (or ahead of it, like a
+  meeting). A calendar link is never required.
+- **Your calendars (optional)** - add any iCalendar (`.ics` / `webcal://`) feed: Google Calendar, Outlook /
   Microsoft 365, iCloud, Fastmail, Proton, ... Recurring events, time zones, exceptions and
   cancellations are handled. Meetings booked through **Calendly** (or Cal.com) are labelled as such.
 - **Reminder times** - default 10 and 5 minutes before; use any list you like, plus optionally
@@ -25,9 +28,9 @@ macOS and Ubuntu/Linux** (Electron).
   keychain (Electron `safeStorage`). The app only talks to your calendar servers.
 - Optional soft whoosh sound and start-at-login.
 
-## Adding a calendar
+## Adding a calendar (optional)
 
-Open **Settings** (tray icon -> *Settings...*, or it opens on first run) and paste the feed link:
+You only need this to get reminders for meetings that already live in a calendar. Open **Settings** (tray icon -> *Settings...*, or it opens on first run) and paste the feed link:
 
 | Calendar | Where to find the link |
 | --- | --- |
@@ -36,7 +39,7 @@ Open **Settings** (tray icon -> *Settings...*, or it opens on first run) and pas
 | Apple iCloud | Share the calendar as a *Public Calendar* and copy the `webcal://` link |
 | Calendly | Connect your Google/Outlook calendar in Calendly; bookings appear in that feed |
 
-Meetwing does not use OAuth, so there is no sign-in and no account: just a read-only link.
+Skip this section entirely if you only want simple reminders. Meetwing does not use OAuth, so there is no sign-in and no account: just a read-only link.
 
 ## Run from source
 
