@@ -1,5 +1,5 @@
 'use strict';
-/* global meetwing, MWScheduler */
+/* global meetwing, MWScheduler, MWJet, MWThemes */
 
 const $ = (id) => document.getElementById(id);
 let current = null;
@@ -124,6 +124,8 @@ function render() {
   $('secondsVal').textContent = `${current.flight.seconds} s`;
   $('size').value = current.flight.size;
   $('sizeVal').textContent = `${Math.round(current.flight.size * 100)}%`;
+  setPreviewSize(current.flight.size);
+  selectColor(current.flight.color, false);
   $('direction').value = current.flight.direction;
   $('display').value = current.flight.display;
   $('sound').checked = current.flight.sound;
@@ -141,11 +143,22 @@ async function reload() {
 
 // ------------------------------------------------------------ actions
 
+// Changes made in quick succession are merged into one save, so none is lost.
 let saveTimer;
+let pending = {};
+function mergeInto(target, patch) {
+  for (const [k, v] of Object.entries(patch)) {
+    if (v && typeof v === 'object' && !Array.isArray(v)) mergeInto((target[k] = target[k] || {}), v);
+    else target[k] = v;
+  }
+}
 function save(patch) {
+  mergeInto(pending, patch());
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async () => {
-    current = await meetwing.setSettings(patch());
+    const send = pending;
+    pending = {};
+    current = await meetwing.setSettings(send);
     render();
   }, 250);
 }
@@ -160,14 +173,17 @@ $('leads').addEventListener('change', () =>
 $('atStart').addEventListener('change', () => save(() => ({ reminders: { atStart: $('atStart').checked } })));
 $('seconds').addEventListener('input', () => ($('secondsVal').textContent = `${$('seconds').value} s`));
 $('seconds').addEventListener('change', () => save(() => ({ flight: { seconds: Number($('seconds').value) } })));
-$('size').addEventListener('input', () => ($('sizeVal').textContent = `${Math.round($('size').value * 100)}%`));
+$('size').addEventListener('input', () => {
+  $('sizeVal').textContent = `${Math.round($('size').value * 100)}%`;
+  setPreviewSize(Number($('size').value));
+});
 $('size').addEventListener('change', () => save(() => ({ flight: { size: Number($('size').value) } })));
 $('direction').addEventListener('change', () => save(() => ({ flight: { direction: $('direction').value } })));
 $('display').addEventListener('change', () => save(() => ({ flight: { display: $('display').value } })));
 $('sound').addEventListener('change', () => save(() => ({ flight: { sound: $('sound').checked } })));
 $('launchAtLogin').addEventListener('change', () => save(() => ({ general: { launchAtLogin: $('launchAtLogin').checked } })));
 
-$('btn-test').addEventListener('click', () => meetwing.testFlight());
+$('btn-test').addEventListener('click', () => meetwing.testFlight(scene));
 $('btn-nudge').addEventListener('click', () => meetwing.nudge());
 $('btn-refresh').addEventListener('click', async () => {
   current = await meetwing.refreshCalendars();
@@ -253,6 +269,78 @@ remForm.addEventListener('submit', async (e) => {
   setTimeout(() => (msg.textContent = ''), 2500);
   render();
 });
+
+// ------------------------------------------------------------ flight preview + colors
+
+const preview = $('preview');
+$('pvJet').innerHTML = MWJet.svg('pv-jet');
+let scene = MWJet.SCENES[1];
+
+function replay() {
+  const f = $('pvFlyer');
+  f.classList.add('restart');
+  void f.offsetWidth; // restart the CSS animation from the start
+  f.classList.remove('restart');
+}
+
+function showScene(s, restart = true) {
+  scene = s;
+  $('pvL').textContent = s.label;
+  $('pvT').textContent = s.title;
+  $('pvS').textContent = s.source;
+  for (const b of $('scenes').children) b.setAttribute('aria-pressed', String(b.dataset.key === s.key));
+  if (restart) replay();
+}
+
+for (const s of MWJet.SCENES) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'scene';
+  b.dataset.key = s.key;
+  b.textContent = s.name;
+  b.addEventListener('click', () => showScene(s));
+  $('scenes').append(b);
+}
+showScene(scene, false);
+$('btn-again').addEventListener('click', replay);
+
+function setPreviewSize(size) {
+  preview.style.setProperty('--s', String(Math.min(1.25, size)));
+}
+
+const swatches = $('swatches');
+for (const t of MWThemes.THEMES) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'swatch';
+  b.setAttribute('role', 'radio');
+  b.dataset.key = t.key;
+  b.title = t.name;
+  b.innerHTML = MWJet.svg(`sw-${t.key}`, 'mini-jet') + '<span></span>';
+  b.lastChild.textContent = t.name;
+  MWThemes.apply(b, t);
+  b.addEventListener('click', () => selectColor(t.key, true));
+  b.addEventListener('keydown', (e) => {
+    const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+    if (!(e.key in keys)) return;
+    e.preventDefault();
+    const list = [...swatches.children];
+    const next = list[(list.indexOf(b) + keys[e.key] + list.length) % list.length];
+    next.focus();
+    selectColor(next.dataset.key, true);
+  });
+  swatches.append(b);
+}
+
+function selectColor(key, persist) {
+  MWThemes.apply(preview, key);
+  for (const b of swatches.children) {
+    const on = b.dataset.key === key;
+    b.setAttribute('aria-checked', String(on));
+    b.tabIndex = on ? 0 : -1;
+  }
+  if (persist) save(() => ({ flight: { color: key } }));
+}
 
 meetwing.onChanged(reload);
 setInterval(() => current && renderUpcoming(), 30000);

@@ -120,6 +120,7 @@ function nextFlight() {
       size: f.size,
       direction: dir,
       sound: f.sound,
+      color: f.color,
       workTop: display.workArea.y - b.y,
     });
   });
@@ -398,8 +399,14 @@ function setupIpc() {
       .map((e) => ({ uid: e.uid, title: e.title, start: e.start, source: e.source, link: e.link }));
   });
 
-  ipcMain.handle('flight:test', () => {
-    enqueueFlight({ label: 'Starting in 10 min', title: 'Product sync with the team', source: 'Google Calendar' });
+  ipcMain.handle('flight:test', (_e, scene) => {
+    const text = (v, fallback) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, 120) : fallback);
+    const s = scene && typeof scene === 'object' ? scene : {};
+    enqueueFlight({
+      label: text(s.label, 'Starting in 10 min'),
+      title: text(s.title, 'Product sync with the team'),
+      source: text(s.source, 'Google Calendar'),
+    });
     return true;
   });
   ipcMain.handle('nudge', () => nudge());

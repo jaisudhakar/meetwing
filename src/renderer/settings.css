@@ -94,3 +94,58 @@ kbd { background: rgba(255, 255, 255, 0.1); border-radius: 5px; padding: 0 5px; 
 input[type="datetime-local"] { background: rgba(0,0,0,0.28); border: 1px solid var(--line); border-radius: 9px; padding: 6px 10px; color: var(--text); }
 .quick { display: flex; flex-wrap: wrap; gap: 6px; }
 .add2 { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+
+/* flight preview + color picker */
+.jt-hi { stop-color: var(--jet-hi, #4aa8ff); }
+.jt-lo { stop-color: var(--jet-lo, #1673d9); }
+.jt-stripe { fill: var(--jet-stripe, #2f8cf0); }
+.jt-light { fill: var(--jet-light, #7bbcff); }
+.preview {
+  --s: 1;
+  container-type: inline-size;
+  position: relative;
+  height: 256px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background:
+    repeating-radial-gradient(circle at 50% 60%, transparent 0 40px, rgba(255, 170, 90, 0.05) 40px 70px),
+    radial-gradient(circle at 50% 60%, #2a1d12, #120d0a 75%);
+}
+.pv-caption { position: absolute; left: 12px; bottom: 9px; font: 11px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255, 255, 255, 0.45); }
+.pv-flyer { position: absolute; left: 0; top: 26px; transform: translateX(30cqw); animation: pv-cruise 7s cubic-bezier(.4, 0, .2, 1) -2.6s infinite; }
+.pv-flyer.restart { animation: none; }
+@keyframes pv-cruise {
+  0% { transform: translateX(-60cqw); opacity: 0; }
+  5% { opacity: 1; }
+  30% { transform: translateX(28cqw); }
+  70% { transform: translateX(33cqw); }
+  95% { opacity: 1; }
+  100% { transform: translateX(120cqw); opacity: 0; }
+}
+.pv-scale { position: relative; width: 210px; transform: scale(var(--s)); transform-origin: 30% 0; transition: transform 0.15s; }
+#pvJet .jet { display: block; width: 210px; height: auto; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.4)); }
+.pv-trail { position: absolute; right: 204px; top: 31px; width: 150px; height: 2px; border-radius: 2px; background: linear-gradient(to right, transparent, var(--jet-light, #7bbcff)); }
+.pv-card { position: absolute; left: 50px; top: 92px; width: 170px; background: #fff; color: #1c2230; border-radius: 12px; padding: 9px 12px 10px; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45); transform-origin: 50% -16px; animation: pv-swing 3s ease-in-out infinite; }
+.pv-card::before { content: ""; position: absolute; left: 50%; top: -16px; width: 1.5px; height: 16px; background: rgba(255, 255, 255, 0.55); }
+@keyframes pv-swing { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+.pv-card .l { font-size: 11px; font-weight: 500; color: var(--jet-ink, #1f6fbf); }
+.pv-card .t { font-size: 13.5px; font-weight: 700; line-height: 1.25; margin: 2px 0 1px; }
+.pv-card .s { font-size: 11px; color: #6f7a8e; }
+.scenes { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 6px; border: 1px solid var(--line); border-radius: 12px; flex-wrap: wrap; }
+.scene-list { display: flex; gap: 4px; flex-wrap: wrap; flex: 1 1 300px; min-width: 0; }
+#btn-again { margin-left: auto; }
+.scene { background: transparent; border: 1px solid transparent; color: var(--muted); padding: 5px 10px; border-radius: 9px; }
+.scene[aria-pressed="true"] { color: var(--text); border-color: var(--line); background: rgba(255, 255, 255, 0.07); }
+#btn-again { border-radius: 999px; }
+h3.sub { margin: 16px 0 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 4px; }
+.swatch { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 2px 5px; background: transparent; border: 1.5px solid transparent; border-radius: 10px; color: var(--muted); font-size: 11px; }
+.swatch .mini-jet { width: 40px; height: auto; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45)); }
+.swatch[aria-checked="true"] { border-color: var(--blue); color: var(--text); background: rgba(74, 168, 255, 0.08); }
+.swatch:hover { background: rgba(255, 255, 255, 0.06); }
+label.size { margin-top: 14px; }
+@media (prefers-reduced-motion: reduce) {
+  .pv-flyer { animation: none; transform: translateX(28cqw); }
+  .pv-card { animation: none; }
+}

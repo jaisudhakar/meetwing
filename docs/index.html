@@ -129,14 +129,40 @@ section { padding-block: 72px; }
 }
 .flyer svg { display: block; width: 300px; height: auto; filter: drop-shadow(0 12px 14px rgba(5, 20, 45, 0.28)); animation: bob 3.4s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-6px); } }
-.trail { position: absolute; right: 292px; top: 47px; width: 220px; height: 3px; border-radius: 2px; background: linear-gradient(to right, transparent, color-mix(in srgb, var(--accent) 70%, transparent)); }
-.trail::after { content: ""; position: absolute; right: -14px; top: -1px; width: 5px; height: 5px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, transparent); }
+.trail { position: absolute; right: 292px; top: 47px; width: 220px; height: 3px; border-radius: 2px; background: linear-gradient(to right, transparent, var(--jet-light, #7bbcff)); }
+.trail::after { content: ""; position: absolute; right: -14px; top: -1px; width: 5px; height: 5px; border-radius: 50%; background: var(--jet-light, #7bbcff); }
 .tag { position: absolute; left: 118px; top: 98px; width: 230px; background: #fff; color: #1c2230; border-radius: 16px; padding: 12px 16px 13px; box-shadow: var(--shadow); transform-origin: 50% -20px; animation: swing 3.2s ease-in-out infinite; }
 .tag::before { content: ""; position: absolute; left: 50%; top: -20px; width: 1.5px; height: 20px; background: color-mix(in srgb, var(--ink) 35%, transparent); }
 @keyframes swing { 0%, 100% { transform: rotate(-2.2deg); } 50% { transform: rotate(2.2deg); } }
-.tag .l { font-size: 13px; font-weight: 500; color: #2c76c3; }
+.tag .l { font-size: 13px; font-weight: 500; color: var(--jet-ink, #2c76c3); }
 .tag .t { font: 700 17px/1.2 var(--display); margin: 3px 0 2px; letter-spacing: -0.01em; }
 .tag .s { font-size: 13.5px; color: #6f7a8e; }
+
+/* jet colors + demo controls */
+.jt-hi { stop-color: var(--jet-hi, #4aa8ff); }
+.jt-lo { stop-color: var(--jet-lo, #1673d9); }
+.jt-stripe { fill: var(--jet-stripe, #2f8cf0); }
+.jt-light { fill: var(--jet-light, #7bbcff); }
+.fscale { position: relative; transform: scale(var(--s, 1)); transform-origin: 40% 0; transition: transform 0.15s; }
+.flyer.restart { animation: none; }
+.demo-controls { margin-top: 14px; display: grid; gap: 16px; }
+.scene-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.scene-list { display: flex; gap: 4px; flex-wrap: wrap; flex: 1 1 340px; min-width: 0; }
+.scene-bar .again { margin-left: auto; }
+.scene { font: 500 15px/1 var(--body); padding: 10px 14px; border-radius: 11px; border: 1px solid transparent; background: transparent; color: var(--muted); cursor: pointer; }
+.scene:hover { color: var(--ink); }
+.scene[aria-pressed="true"] { color: var(--ink); background: var(--accent-soft); border-color: var(--line); }
+.again { font: 600 15px/1 var(--body); padding: 11px 18px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+.again:hover { border-color: var(--accent); }
+.pickers { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 24px; align-items: start; }
+.ctl-label { font: 500 13px/1 var(--body); color: var(--muted); margin-bottom: 8px; display: block; }
+.ctl-label b { color: var(--ink); font-weight: 600; margin-left: 6px; }
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 4px; }
+.swatch { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 8px 2px 6px; border: 1.5px solid transparent; border-radius: 12px; background: transparent; color: var(--muted); font: 500 12px/1.2 var(--body); cursor: pointer; }
+.swatch svg { width: 42px; height: auto; filter: drop-shadow(0 1px 1px rgba(11, 27, 51, 0.35)); }
+.swatch:hover { background: var(--accent-soft); }
+.swatch[aria-checked="true"] { border-color: var(--accent); color: var(--ink); background: var(--surface); }
+.size-pick input { width: 100%; accent-color: var(--accent); }
 
 /* proposal */
 .cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 36px; }
@@ -219,6 +245,7 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
   .maker { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 18px; }
   .avatar { width: 72px; height: 72px; font-size: 26px; }
   .stage { height: 300px; }
+  .pickers { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 520px) {
   .flyer, .flyer svg { width: 230px; }
@@ -272,11 +299,12 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
 
       <div class="stage" aria-label="Animated example of a Meetwing reminder">
         <div class="flyer" id="flyer">
+          <div class="fscale">
           <div class="trail"></div>
           <svg viewBox="0 0 320 110" role="img" aria-label="Jet">
             <defs>
               <linearGradient id="gBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#eef3fa"/><stop offset="1" stop-color="#c9d6e8"/></linearGradient>
-              <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa8ff"/><stop offset="1" stop-color="#1673d9"/></linearGradient>
+              <linearGradient id="gBlue" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="jt-hi"/><stop offset="1" class="jt-lo"/></linearGradient>
               <clipPath id="hull"><path d="M44 48 C96 30 214 30 280 46 C304 52 314 59 307 64 C300 70 280 73 256 73 L76 73 C56 73 44 63 44 48 Z"/></clipPath>
             </defs>
             <g fill="#2b3446"><rect x="226" y="72" width="3" height="9"/><circle cx="227.5" cy="84" r="5.5"/><rect x="112" y="72" width="3" height="9"/><circle cx="113.5" cy="84" r="5.5"/></g>
@@ -285,7 +313,7 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
             <path d="M44 48 L22 40 L26 34 L70 44 Z" fill="#c9d6e8"/>
             <rect x="58" y="30" width="46" height="17" rx="8.5" fill="#aebdd3"/><ellipse cx="60" cy="38.5" rx="3.5" ry="7" fill="#46526a"/>
             <path d="M44 48 C96 30 214 30 280 46 C304 52 314 59 307 64 C300 70 280 73 256 73 L76 73 C56 73 44 63 44 48 Z" fill="url(#gBody)"/>
-            <g clip-path="url(#hull)"><path d="M266 20 C284 40 292 60 276 90 L330 90 L330 20 Z" fill="url(#gBlue)"/><rect x="40" y="60" width="240" height="5" fill="#2f8cf0"/><rect x="40" y="66" width="240" height="2" fill="#7bbcff"/></g>
+            <g clip-path="url(#hull)"><path d="M266 20 C284 40 292 60 276 90 L330 90 L330 20 Z" fill="url(#gBlue)"/><rect x="40" y="60" width="240" height="5" class="jt-stripe"/><rect x="40" y="66" width="240" height="2" class="jt-light"/></g>
             <g fill="#27344d"><rect x="112" y="47" width="7" height="8" rx="3"/><rect x="127" y="47" width="7" height="8" rx="3"/><rect x="142" y="47" width="7" height="8" rx="3"/><rect x="157" y="47" width="7" height="8" rx="3"/><rect x="172" y="47" width="7" height="8" rx="3"/><rect x="187" y="47" width="7" height="8" rx="3"/><rect x="202" y="47" width="7" height="8" rx="3"/><rect x="217" y="47" width="7" height="8" rx="3"/><path d="M243 41 C255 41 266 44 272 49 L243 49 Z"/></g>
             <path d="M128 62 L206 62 L160 98 L118 98 Z" fill="#c3d2e6"/><path d="M128 62 L206 62 L196 69 L124 69 Z" fill="#e6edf7"/>
             <rect x="146" y="82" width="46" height="16" rx="8" fill="#9db4d4"/><ellipse cx="190" cy="90" rx="3.5" ry="7" fill="#46526a"/>
@@ -295,8 +323,25 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
             <div class="t" id="tagT">Product sync with the team</div>
             <div class="s" id="tagS">Google Calendar</div>
           </div>
+          </div>
         </div>
-        <span class="stage-caption">EXAMPLE REMINDER</span>
+        <span class="stage-caption">TRY IT: PICK A SCENE, COLOR AND SIZE</span>
+      </div>
+      <div class="demo-controls">
+        <div class="scene-bar">
+          <div class="scene-list" id="scenes" role="group" aria-label="Example reminder"></div>
+          <button class="again" id="again" type="button">&#8635; Nudge again</button>
+        </div>
+        <div class="pickers">
+          <div class="color-pick">
+            <p class="ctl-label" id="colorLbl">Flight color</p>
+            <div class="swatches" id="swatches" role="radiogroup" aria-labelledby="colorLbl"></div>
+          </div>
+          <label class="size-pick" for="planeSize">
+            <span class="ctl-label">Plane size <b id="sizeOut">100%</b></span>
+            <input type="range" id="planeSize" min="0.6" max="1.4" step="0.05" value="1" />
+          </label>
+        </div>
       </div>
     </section>
 
@@ -361,7 +406,7 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
         <div class="r"><dt>Platforms</dt><dd>Windows 10 and 11 (installer and portable .exe), macOS (.dmg for Intel and Apple silicon), Ubuntu and other Linux (.deb and AppImage).</dd></div>
         <div class="r"><dt>Reminders</dt><dd><b>Hand-made:</b> title, time, optional note, once / every day / weekdays / every week, flying at that time or ahead like a meeting. <b>From calendars (optional):</b> any iCal (.ics) or webcal link, with recurring events, time zones and cancellations handled. All-day events are ignored.</dd></div>
         <div class="r"><dt>Sources</dt><dd>Google Calendar, Outlook and Microsoft 365, Apple iCloud and other iCal feeds. Meetings booked through Calendly or Cal.com are labeled with their name on the card.</dd></div>
-        <div class="r"><dt>Flight controls</dt><dd>Lead times, time on screen (5 to 20 seconds), jet size, direction, which display, optional soft whoosh sound, start at login.</dd></div>
+        <div class="r"><dt>Flight controls</dt><dd><b>20 flight colors</b> with a live preview, plane size, lead times, time on screen (5 to 20 seconds), direction, which display, optional soft whoosh sound, start at login.</dd></div>
         <div class="r"><dt>Shortcuts</dt><dd><b>Nudge</b> and <b>Join</b> work from anywhere. Rest and settings live in the tray or menu-bar icon.</dd></div>
         <div class="r"><dt>Privacy</dt><dd>No account and no cloud. Calendar links work like passwords, so they are stored encrypted with your system keychain. The only network traffic is fetching your own calendar link.</dd></div>
         <div class="r"><dt>Requirements</dt><dd>A desktop running Windows, macOS or Linux. For source builds, Node.js 20 or newer.</dd></div>
@@ -466,23 +511,96 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
 
 <script>
 (function () {
-  // Example reminders cycle each time the jet starts a new pass.
-  var examples = [
-    ['Starting in 10 min', 'Product sync with the team', 'Google Calendar'],
-    ['Starting in 5 min', 'Intro call with Alex', 'Calendly'],
-    ['Reminder', 'Stretch your legs', 'Stand up for 2 min']
-  ];
-  var i = 0;
+  // Demo: scenes, flight colors and plane size (same options as the app's settings)
+  var SCENES = [{"key": "standup", "name": "Standup", "label": "Starting in 5 min", "title": "Daily standup", "source": "Google Calendar"}, {"key": "design", "name": "Design", "label": "Starting in 10 min", "title": "Product sync with the team", "source": "Google Calendar"}, {"key": "calendly", "name": "Calendly", "label": "Starting in 5 min", "title": "Intro call with Alex", "source": "Calendly"}, {"key": "apple", "name": "Apple", "label": "Starting in 15 min", "title": "Dentist appointment", "source": "Apple Calendar"}, {"key": "oneone", "name": "1:1", "label": "Starting in 10 min", "title": "1:1 with your manager", "source": "Outlook"}, {"key": "reminder", "name": "Reminder", "label": "Reminder", "title": "Stretch your legs", "source": "Stand up for 2 min"}];
+  var THEMES = [{"key": "sky", "name": "Sky", "hi": "#4aa8ff", "lo": "#1673d9", "stripe": "#2f8cf0", "light": "#7bbcff", "ink": "#1f6fbf"}, {"key": "crimson", "name": "Crimson", "hi": "#ff5a6e", "lo": "#c8102e", "stripe": "#e2233f", "light": "#ff8f9c", "ink": "#b0102a"}, {"key": "emerald", "name": "Emerald", "hi": "#34d399", "lo": "#059669", "stripe": "#10b981", "light": "#6ee7b7", "ink": "#047857"}, {"key": "amber", "name": "Amber", "hi": "#fbbf24", "lo": "#d97706", "stripe": "#f59e0b", "light": "#fcd34d", "ink": "#92400e"}, {"key": "violet", "name": "Violet", "hi": "#a78bfa", "lo": "#7c3aed", "stripe": "#8b5cf6", "light": "#c4b5fd", "ink": "#6d28d9"}, {"key": "rose", "name": "Rose", "hi": "#fb7185", "lo": "#e11d48", "stripe": "#f43f5e", "light": "#fda4af", "ink": "#be123c"}, {"key": "slate", "name": "Slate", "hi": "#94a3b8", "lo": "#475569", "stripe": "#64748b", "light": "#cbd5e1", "ink": "#334155"}, {"key": "midnight", "name": "Midnight", "hi": "#3b4a7a", "lo": "#111a3a", "stripe": "#1f2b57", "light": "#5b6ca8", "ink": "#1f2b57"}, {"key": "coral", "name": "Coral", "hi": "#ff8a65", "lo": "#f4511e", "stripe": "#ff7043", "light": "#ffab91", "ink": "#c2410c"}, {"key": "mint", "name": "Mint", "hi": "#6ee7c8", "lo": "#14b8a6", "stripe": "#2dd4bf", "light": "#99f6e4", "ink": "#0f766e"}, {"key": "gold", "name": "Gold", "hi": "#fcd34d", "lo": "#b8860b", "stripe": "#d4a017", "light": "#fde68a", "ink": "#8a6100"}, {"key": "indigo", "name": "Indigo", "hi": "#818cf8", "lo": "#4338ca", "stripe": "#6366f1", "light": "#a5b4fc", "ink": "#4338ca"}, {"key": "lime", "name": "Lime", "hi": "#bef264", "lo": "#65a30d", "stripe": "#84cc16", "light": "#d9f99d", "ink": "#4d7c0f"}, {"key": "fuchsia", "name": "Fuchsia", "hi": "#f0abfc", "lo": "#c026d3", "stripe": "#d946ef", "light": "#f5d0fe", "ink": "#a21caf"}, {"key": "ocean", "name": "Ocean", "hi": "#38bdf8", "lo": "#0369a1", "stripe": "#0ea5e9", "light": "#7dd3fc", "ink": "#075985"}, {"key": "white", "name": "White", "hi": "#ffffff", "lo": "#d6dde8", "stripe": "#c5cfdd", "light": "#e8edf4", "ink": "#475569"}, {"key": "cherry", "name": "Cherry", "hi": "#f43f5e", "lo": "#9f1239", "stripe": "#be123c", "light": "#fb7185", "ink": "#9f1239"}, {"key": "graphite", "name": "Graphite", "hi": "#6b7280", "lo": "#1f2937", "stripe": "#374151", "light": "#9ca3af", "ink": "#374151"}, {"key": "aurora", "name": "Aurora", "hi": "#5eead4", "lo": "#8b5cf6", "stripe": "#22d3ee", "light": "#c4b5fd", "ink": "#6d28d9"}, {"key": "honey", "name": "Honey", "hi": "#fde047", "lo": "#f59e0b", "stripe": "#facc15", "light": "#fef08a", "ink": "#a16207"}];
+  var stage = document.querySelector('.stage');
   var flyer = document.getElementById('flyer');
-  if (flyer) {
-    flyer.addEventListener('animationiteration', function (e) {
-      if (e.animationName !== 'cruise') return;
-      i = (i + 1) % examples.length;
-      document.getElementById('tagL').textContent = examples[i][0];
-      document.getElementById('tagT').textContent = examples[i][1];
-      document.getElementById('tagS').textContent = examples[i][2];
+  var sceneBox = document.getElementById('scenes');
+  var current = 1;
+  var userPicked = false;
+
+  function showScene(i, restart) {
+    current = i;
+    var sc = SCENES[i];
+    document.getElementById('tagL').textContent = sc.label;
+    document.getElementById('tagT').textContent = sc.title;
+    document.getElementById('tagS').textContent = sc.source;
+    Array.prototype.forEach.call(sceneBox.children, function (b, j) { b.setAttribute('aria-pressed', j === i ? 'true' : 'false'); });
+    if (restart) replay();
+  }
+  function replay() {
+    flyer.classList.add('restart');
+    void flyer.offsetWidth;
+    flyer.style.animationDelay = '0s';
+    flyer.classList.remove('restart');
+  }
+  SCENES.forEach(function (sc, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'scene';
+    b.textContent = sc.name;
+    b.addEventListener('click', function () { userPicked = true; showScene(i, true); });
+    sceneBox.appendChild(b);
+  });
+  showScene(current, false);
+  document.getElementById('again').addEventListener('click', function () { userPicked = true; replay(); });
+  flyer.addEventListener('animationiteration', function (e) {
+    if (e.animationName !== 'cruise' || userPicked) return;
+    showScene((current + 1) % SCENES.length, false);
+  });
+
+  function applyTheme(el, t) {
+    el.style.setProperty('--jet-hi', t.hi);
+    el.style.setProperty('--jet-lo', t.lo);
+    el.style.setProperty('--jet-stripe', t.stripe);
+    el.style.setProperty('--jet-light', t.light);
+    el.style.setProperty('--jet-ink', t.ink);
+  }
+  function miniJet(id) {
+    return '<svg viewBox="0 0 320 110" aria-hidden="true" focusable="false"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="jt-hi"/><stop offset="1" class="jt-lo"/></linearGradient></defs>' +
+      '<path d="M150 64 L214 64 L176 92 L146 92 Z" fill="#9db4d4"/><path d="M52 50 L34 10 L66 10 L96 44 Z" fill="url(#' + id + ')"/>' +
+      '<path d="M44 48 C96 30 214 30 280 46 C304 52 314 59 307 64 C300 70 280 73 256 73 L76 73 C56 73 44 63 44 48 Z" fill="#f2f5fa"/>' +
+      '<path d="M270 44 C290 50 312 57 307 64 C300 70 288 72 278 72 Z" fill="url(#' + id + ')"/><rect x="60" y="60" width="210" height="5" class="jt-stripe"/>' +
+      '<path d="M128 62 L206 62 L160 98 L118 98 Z" fill="#c3d2e6"/></svg>';
+  }
+  var swBox = document.getElementById('swatches');
+  function selectColor(key) {
+    var t = THEMES.filter(function (x) { return x.key === key; })[0] || THEMES[0];
+    applyTheme(stage, t);
+    Array.prototype.forEach.call(swBox.children, function (b) {
+      var on = b.getAttribute('data-key') === t.key;
+      b.setAttribute('aria-checked', on ? 'true' : 'false');
+      b.tabIndex = on ? 0 : -1;
     });
   }
+  THEMES.forEach(function (t, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('data-key', t.key);
+    b.innerHTML = miniJet('swj-' + t.key) + '<span></span>';
+    b.lastChild.textContent = t.name;
+    applyTheme(b, t);
+    b.addEventListener('click', function () { selectColor(t.key); });
+    b.addEventListener('keydown', function (e) {
+      var d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!d) return;
+      e.preventDefault();
+      var next = swBox.children[(i + d + THEMES.length) % THEMES.length];
+      next.focus();
+      selectColor(next.getAttribute('data-key'));
+    });
+    swBox.appendChild(b);
+  });
+  selectColor('sky');
+
+  var size = document.getElementById('planeSize');
+  size.addEventListener('input', function () {
+    stage.style.setProperty('--s', size.value);
+    document.getElementById('sizeOut').textContent = Math.round(size.value * 100) + '%';
+  });
 
   // OS tabs
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));

@@ -101,11 +101,30 @@
 
     <section class="card">
       <h2>Flight</h2>
+      <div class="preview" id="preview" aria-label="Preview of a reminder flight">
+        <div class="pv-flyer" id="pvFlyer">
+          <div class="pv-scale">
+            <div class="pv-trail"></div>
+            <div id="pvJet"></div>
+            <div class="pv-card"><div class="l" id="pvL"></div><div class="t" id="pvT"></div><div class="s" id="pvS"></div></div>
+          </div>
+        </div>
+        <span class="pv-caption">Preview</span>
+      </div>
+      <div class="scenes">
+        <div id="scenes" class="scene-list" role="group" aria-label="Preview scene"></div>
+        <button id="btn-again" type="button">&#8635; Nudge again</button>
+      </div>
+
+      <h3 class="sub" id="colorLabel">Flight color</h3>
+      <div id="swatches" class="swatches" role="radiogroup" aria-labelledby="colorLabel"></div>
+
+      <label class="size">Plane size <b id="sizeVal"></b>
+        <input id="size" type="range" min="0.6" max="1.6" step="0.05" /></label>
+
       <div class="grid">
         <label>Time on screen: <b id="secondsVal"></b>
           <input id="seconds" type="range" min="5" max="20" step="1" /></label>
-        <label>Jet size: <b id="sizeVal"></b>
-          <input id="size" type="range" min="0.6" max="1.6" step="0.1" /></label>
         <label>Direction
           <select id="direction">
             <option value="ltr">Left to right</option>
@@ -133,6 +152,8 @@
   </div>
   <div id="toast" class="toast hidden" role="status"></div>
   <script src="../shared/scheduler.js"></script>
+  <script src="../shared/jet.js"></script>
+  <script src="../shared/themes.js"></script>
   <script src="settings.js"></script>
 </body>
 </html>

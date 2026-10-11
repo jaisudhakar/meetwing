@@ -12,6 +12,10 @@ macOS and Ubuntu/Linux** (Electron).
 
 - **Flying reminders** - the jet glides in, hovers so you can read the card, and leaves. Pick how
   long it stays, how big it is, which direction it flies, and which screen it appears on.
+- **20 flight colors + live preview** - Sky, Crimson, Emerald, Amber, Violet, Rose, Slate,
+  Midnight, Coral, Mint, Gold, Indigo, Lime, Fuchsia, Ocean, White, Cherry, Graphite, Aurora and
+  Honey. Settings shows a live preview with example scenes (Standup, Design, Calendly, Apple, 1:1,
+  Reminder) and a *Nudge again* button; *Test flight* flies the selected scene for real.
 - **Simple reminders, no calendar needed** - type what to remember, pick a time, and optionally
   repeat it every day, on weekdays or weekly. The jet flies at that time (or ahead of it, like a
   meeting). A calendar link is never required.

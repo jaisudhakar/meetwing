@@ -1,5 +1,5 @@
 'use strict';
-/* global overlay */
+/* global overlay, MWJet, MWThemes */
 // Animates one flight: the jet glides in, hovers so the card can be read, then leaves.
 
 const $ = (id) => document.getElementById(id);
@@ -29,7 +29,10 @@ function whoosh(ctx, when, duration) {
   src.start(when);
 }
 
+$('plane').innerHTML = MWJet.svg('jet');
+
 function fly(p) {
+  MWThemes.apply(document.documentElement, p.color);
   const W = window.innerWidth;
   const H = window.innerHeight;
   const plane = $('plane');

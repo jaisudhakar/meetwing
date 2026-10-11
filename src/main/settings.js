@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { THEMES } = require('../shared/themes');
 
 const DEFAULTS = {
   reminders: { leadMinutes: [10, 5], atStart: false },
@@ -11,6 +12,7 @@ const DEFAULTS = {
     direction: 'ltr', // ltr | rtl | alternate
     display: 'cursor', // cursor | primary
     sound: false,
+    color: 'sky', // one of shared/themes.js
   },
   general: { launchAtLogin: false, showInTray: true, onboarded: false },
   restUntil: 0, // epoch ms; reminders are paused until then (-1 = until resumed)
@@ -92,6 +94,7 @@ class SettingsStore {
     if (!['ltr', 'rtl', 'alternate'].includes(f.direction)) f.direction = 'ltr';
     if (!['cursor', 'primary'].includes(f.display)) f.display = 'cursor';
     f.sound = !!f.sound;
+    if (!THEMES.some((t) => t.key === f.color)) f.color = 'sky';
     this.data.manual = (Array.isArray(this.data.manual) ? this.data.manual : [])
       .filter((m) => m && m.id && m.title && Number.isFinite(m.start))
       .slice(0, 200);
