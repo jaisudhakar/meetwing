@@ -195,6 +195,14 @@ details { background: var(--surface); border: 1px solid var(--line); border-radi
 summary { cursor: pointer; font: 700 18px/1.4 var(--display); padding-block: 14px; list-style-position: outside; }
 details p { color: var(--muted); padding-bottom: 16px; }
 
+/* maker */
+.maker { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px; }
+.avatar { width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(160deg, #5cb2ff, #1270d6); color: #ffffff; display: grid; place-items: center; font: 800 36px/1 var(--display); letter-spacing: -0.02em; }
+.maker h2 { font-size: clamp(30px, 4.4vw, 44px); }
+.maker p { color: var(--muted); margin-top: 10px; max-width: 58ch; }
+.maker .site { font: 500 14px/1 var(--mono); color: var(--accent); }
+.maker .ctas { margin-top: 20px; }
+
 /* closing */
 .final { background: var(--ink); color: var(--bg); border-radius: 28px; padding: 48px 32px; display: grid; gap: 14px; justify-items: start; }
 .final h2 { font-size: clamp(32px, 5vw, 52px); }
@@ -208,6 +216,8 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
   .cols3 { grid-template-columns: 1fr; }
   .stop-body { grid-template-columns: minmax(0, 1fr); }
   .scope .r { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .maker { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 18px; }
+  .avatar { width: 72px; height: 72px; font-size: 26px; }
   .stage { height: 300px; }
 }
 @media (max-width: 520px) {
@@ -243,6 +253,7 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
       <a href="#scope">Details</a>
       <a href="#install">Install</a>
       <a href="#faq">FAQ</a>
+      <a href="#maker">About</a>
     </nav>
   </header>
 
@@ -419,6 +430,22 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
       </div>
     </section>
 
+    <section id="maker" aria-labelledby="h-maker">
+      <p class="eyebrow">Who built this</p>
+      <div class="maker">
+        <div class="avatar" aria-hidden="true">JS</div>
+        <div>
+          <h2 id="h-maker">Built by Jai Sudhakar</h2>
+          <p>Meetwing is designed and built by Jai Sudhakar. More projects and contact details are on the portfolio.</p>
+          <p class="site">onemandeveloper.com</p>
+          <div class="ctas">
+            <a class="btn primary" href="https://onemandeveloper.com" target="_blank" rel="noopener">Visit the portfolio</a>
+            <a class="btn" href="https://github.com/jaisudhakar/meetwing" target="_blank" rel="noopener">View the source</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section aria-labelledby="h-final" style="padding-top: 24px;">
       <div class="final">
         <h2 id="h-final">See it fly.</h2>
@@ -432,7 +459,7 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
   </main>
 
   <footer>
-    <span>Meetwing. Nudge. Fly. Rest.</span>
+    <span>Meetwing, built by <a href="https://onemandeveloper.com" target="_blank" rel="noopener">Jai Sudhakar</a>. Nudge. Fly. Rest.</span>
     <span><a href="https://shipwithajay.com/products/meetwing#demo" target="_blank" rel="noopener">Demo</a> · <a href="https://github.com/jaisudhakar/meetwing" target="_blank" rel="noopener">Source code</a></span>
   </footer>
 </div>
