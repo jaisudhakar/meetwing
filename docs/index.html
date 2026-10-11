@@ -223,6 +223,8 @@ details p { color: var(--muted); padding-bottom: 16px; }
 
 /* maker */
 .maker { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px; }
+.avatar-wrap { width: 104px; height: 104px; }
+.avatar-img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; display: block; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent); }
 .avatar { width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(160deg, #5cb2ff, #1270d6); color: #ffffff; display: grid; place-items: center; font: 800 36px/1 var(--display); letter-spacing: -0.02em; }
 .maker h2 { font-size: clamp(30px, 4.4vw, 44px); }
 .maker p { color: var(--muted); margin-top: 10px; max-width: 58ch; }
@@ -243,7 +245,8 @@ footer { padding-block: 36px 56px; color: var(--muted); font-size: 14px; display
   .stop-body { grid-template-columns: minmax(0, 1fr); }
   .scope .r { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .maker { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 18px; }
-  .avatar { width: 72px; height: 72px; font-size: 26px; }
+  .avatar-wrap, .avatar-img { width: 80px; height: 80px; }
+  .avatar { width: 80px; height: 80px; font-size: 28px; }
   .stage { height: 300px; }
   .pickers { grid-template-columns: minmax(0, 1fr); }
 }
@@ -478,7 +481,10 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
     <section id="maker" aria-labelledby="h-maker">
       <p class="eyebrow">Who built this</p>
       <div class="maker">
-        <div class="avatar" aria-hidden="true">JS</div>
+        <div class="avatar-wrap">
+          <img class="avatar-img" id="makerPhoto" src="assets/jai-sudhakar.jpg" alt="Jai Sudhakar" width="104" height="104" hidden />
+          <div class="avatar" id="makerInitials" aria-hidden="true">JS</div>
+        </div>
         <div>
           <h2 id="h-maker">Built by Jai Sudhakar</h2>
           <p>Meetwing is designed and built by Jai Sudhakar. More projects and contact details are on the portfolio.</p>
@@ -601,6 +607,17 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
     stage.style.setProperty('--s', size.value);
     document.getElementById('sizeOut').textContent = Math.round(size.value * 100) + '%';
   });
+
+  // Maker photo: show it once it loads; the initials stay if the file is missing.
+  var photo = document.getElementById('makerPhoto');
+  if (photo) {
+    var showPhoto = function () {
+      if (!photo.naturalWidth) return;
+      photo.hidden = false;
+      document.getElementById('makerInitials').hidden = true;
+    };
+    if (photo.complete) showPhoto(); else photo.addEventListener('load', showPhoto);
+  }
 
   // OS tabs
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
