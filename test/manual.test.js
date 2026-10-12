@@ -52,3 +52,13 @@ test('"lead" reminders use the global lead times; "attime" fires once with a Rem
   const now = s.due(t + 1000);
   assert.deepStrictEqual(now.map((d) => [d.event.title, d.label]), [['Take a break', 'Reminder']]);
 });
+
+test('a repeating reminder whose start has seconds still fires on its first day', () => {
+  const start = local(2026, 10, 12, 11, 13) + 27 * 1000; // 11:13:27
+  const evs = expandManual([item({ repeat: 'daily', start })], win(local(2026, 10, 12, 0), local(2026, 10, 13, 0)));
+  assert.strictEqual(evs.length, 1);
+  assert.strictEqual(new Date(evs[0].start).getMinutes(), 13);
+  // and new items are stored at whole minutes
+  const now = local(2026, 10, 12, 10, 0);
+  assert.strictEqual(makeItem({ title: 'x', whenMs: start, repeat: 'daily' }, now).start % 60000, 0);
+});

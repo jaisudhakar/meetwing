@@ -1,12 +1,27 @@
-# Meetwing
+<p align="center">
+  <img src="build/icon.png" width="88" alt="Meetwing icon" />
+</p>
 
-**Nudge. Fly. Rest.** A little jet flies across your screen before every meeting, towing a card
-that says what is starting and from which calendar:
+<h1 align="center">Meetwing</h1>
 
-> **Starting in 10 min** - Product sync with the team - *Google Calendar*
+<p align="center"><b>Nudge. Fly. Rest.</b><br />
+A desktop reminder app for Windows, macOS and Ubuntu. Before every meeting or reminder, a small jet
+flies across your screen towing a card with what is next.</p>
 
-It lives in your menu bar / system tray, never steals focus or clicks, and works on **Windows,
-macOS and Ubuntu/Linux** (Electron).
+<p align="center">
+  <a href="#install">Install</a> &middot;
+  <a href="https://shipwithajay.com/products/meetwing#demo">Demo</a> &middot;
+  <a href="docs/index.html">Landing page</a> &middot;
+  <a href="#built-by">Built by</a>
+</p>
+
+![A Meetwing reminder: the jet flies across the desktop towing a card that says "Starting in 10 min, Product sync with the team, Google Calendar"](docs/screenshots/flight.png)
+
+It lives in your menu bar / system tray, never steals focus or clicks, and needs no account.
+
+| Reminders and what is up next | Flight preview, 20 colors and size |
+| --- | --- |
+| ![Settings window with three reminders and the Up next list](docs/screenshots/settings.png) | ![Flight settings with a live preview, example scenes, 20 flight colors and a plane size slider](docs/screenshots/colors.png) |
 
 ## Features
 
@@ -44,6 +59,8 @@ You only need this to get reminders for meetings that already live in a calendar
 | Calendly | Connect your Google/Outlook calendar in Calendly; bookings appear in that feed |
 
 Skip this section entirely if you only want simple reminders. Meetwing does not use OAuth, so there is no sign-in and no account: just a read-only link.
+
+<a id="install"></a>
 
 ## Run from source
 
@@ -100,3 +117,17 @@ scripts/        make-icon.js generates build/icon.png; start.js is the dev launc
 Each flight is a transparent, click-through, always-on-top window covering one display. It is
 created for the flight and destroyed afterwards, so nothing sits on your screen the rest of the day.
 Calendars refresh every 5 minutes and after waking from sleep; the scheduler checks every 15 seconds.
+
+<a id="built-by"></a>
+
+## Built by
+
+<img src="docs/assets/jai-sudhakar.jpg" width="96" align="left" alt="Jai Sudhakar" style="border-radius:50%; margin-right: 16px;" />
+
+**Jai Sudhakar** · Full-stack eCommerce developer, 8+ years<br />
+Shopify Partner building themes and apps, with Magento 2, PHP and Node. Now building Shopify apps
+and AI developer tools, including Meetwing.<br />
+Native Brand Technologies · Coimbatore, India<br />
+[onemandeveloper.com](https://onemandeveloper.com) · [GitHub @jaisudhakar](https://github.com/jaisudhakar)
+
+<br clear="left" />

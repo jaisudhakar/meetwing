@@ -8,8 +8,9 @@ const REPEATS = ['none', 'daily', 'weekdays', 'weekly'];
 function makeItem({ title, whenMs, repeat = 'none', mode = 'attime', note = '' }, now = Date.now()) {
   const t = String(title || '').trim().slice(0, 120);
   if (!t) throw new Error('Give the reminder a title.');
-  const start = Number(whenMs);
-  if (!Number.isFinite(start)) throw new Error('Pick a date and time.');
+  const raw = Number(whenMs);
+  if (!Number.isFinite(raw)) throw new Error('Pick a date and time.');
+  const start = Math.floor(raw / 60000) * 60000; // reminders are set to the minute
   if (!REPEATS.includes(repeat)) throw new Error('Unknown repeat option.');
   if (repeat === 'none' && start < now - 60 * 1000) throw new Error('That time has already passed.');
   return {
@@ -53,7 +54,7 @@ function expandManual(items, { fromMs, toMs }) {
     const first = new Date(fromMs - DAY); // include yesterday so a late tick still sees it
     for (let d = new Date(first.getFullYear(), first.getMonth(), first.getDate()); d.getTime() < toMs; d.setDate(d.getDate() + 1)) {
       const at = new Date(d.getFullYear(), d.getMonth(), d.getDate(), base.getHours(), base.getMinutes()).getTime();
-      if (at < it.start) continue;
+      if (at < Math.floor(it.start / 60000) * 60000) continue; // compare whole minutes
       if (matches(it.repeat, d, base)) push(at);
     }
   }
