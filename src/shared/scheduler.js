@@ -45,7 +45,7 @@
       this.events = events.slice().sort((a, b) => a.start - b.start);
       // forget keys of events that are gone so the set cannot grow forever
       const live = new Set(this.events.map((e) => e.uid));
-      for (const key of this.fired) if (!live.has(key.split('#')[0])) this.fired.delete(key);
+      for (const key of this.fired) if (!live.has(key.slice(0, key.lastIndexOf('#')))) this.fired.delete(key);
     }
 
     /** Reminders that should fly now. Each is returned at most once. */

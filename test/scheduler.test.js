@@ -55,3 +55,12 @@ test('next() skips finished events', () => {
   assert.strictEqual(s.next(60 * MIN).uid, 'now');
   assert.strictEqual(s.next(100 * MIN).uid, 'later');
 });
+
+test('event ids containing "#" keep their fired state across calendar refreshes', () => {
+  const s = new Scheduler({ leadMinutes: [5] });
+  const e = { uid: 'abc#123@x.com@6000000', title: 't', start: 100 * MIN, end: 130 * MIN };
+  s.setEvents([e]);
+  assert.strictEqual(s.due(95 * MIN).length, 1);
+  s.setEvents([{ ...e }]); // 5-minute refresh brings the same event back
+  assert.deepStrictEqual(s.due(95 * MIN + 15000), []);
+});
