@@ -9,6 +9,7 @@ A desktop reminder app for Windows, macOS and Ubuntu. Before every meeting or re
 flies across your screen towing a card with what is next.</p>
 
 <p align="center">
+  <a href="#how-to-use-meetwing">How to use</a> &middot;
   <a href="#install">Install</a> &middot;
   <a href="https://shipwithajay.com/products/meetwing#demo">Demo</a> &middot;
   <a href="docs/index.html">Landing page</a> &middot;
@@ -22,6 +23,67 @@ It lives in your menu bar / system tray, never steals focus or clicks, and needs
 | Reminders and what is up next | Flight preview, 20 colors and size |
 | --- | --- |
 | ![Settings window with three reminders and the Up next list](docs/screenshots/settings.png) | ![Flight settings with a live preview, example scenes, 20 flight colors and a plane size slider](docs/screenshots/colors.png) |
+
+## How to use Meetwing
+
+A quick walkthrough with screenshots from the app. The names and times in them are example data.
+
+### 1. Open Meetwing
+
+After installing (see [Install](#install)), start Meetwing. The settings window opens by itself the
+first time. After that Meetwing lives in your menu bar (macOS) or system tray (Windows, Ubuntu):
+click its icon and choose **Settings…** to come back here.
+
+<img src="docs/screenshots/steps/1-first-run.png" width="560" alt="The Meetwing settings window on first run, with an empty Up next list" />
+
+### 2. Add a reminder
+
+Type what you want to be reminded about, pick a time (or tap **In 10 min**, **In 30 min**,
+**In 1 hour**, **Tomorrow 9:00**), and choose whether it repeats: once, every day, weekdays or
+every week. The small text is optional and appears under the title on the card.
+
+<img src="docs/screenshots/steps/2-add-reminder.png" width="560" alt="The New reminder form filled in: Stretch your legs, weekdays, Stand up for 2 min" />
+
+### 3. Save it
+
+Press **Add reminder**. It appears in the list, where **Remove** deletes it. No calendar or account
+is needed for this.
+
+<img src="docs/screenshots/steps/3-reminder-saved.png" width="560" alt="The reminder saved and listed as Stretch your legs, weekdays" />
+
+### 4. Watch the jet fly
+
+When it is time, a jet flies across the screen your mouse is on, towing a card with the reminder.
+It never takes your clicks or keyboard, so you can keep working while it passes.
+
+<img src="docs/screenshots/steps/7-reminder-flight.png" alt="A violet jet flying across the screen towing a card: Reminder, Stretch your legs, Stand up for 2 min" />
+
+### 5. Connect a calendar (optional)
+
+To get reminders for meetings automatically, paste your calendar's iCal link under **Calendars**.
+**Where do I find the link?** shows where to copy it for Google Calendar, Outlook, iCloud and Calendly.
+Meetwing then flies 10 and 5 minutes before each meeting (you can change these times).
+
+<img src="docs/screenshots/steps/5-calendar.png" width="560" alt="The Calendars section with Google Calendar added and the help for finding calendar links" />
+
+### 6. See what is next, join, or rest
+
+**Up next** lists your next reminders and meetings. **Join** opens the meeting's Zoom, Meet or Teams
+link. **Nudge now** flies the next reminder right away, **Test flight** shows a sample flight, and
+**Rest** pauses the jet for an hour, until tomorrow, or until you resume.
+
+<img src="docs/screenshots/steps/4-up-next.png" width="560" alt="Up next with a Google Calendar meeting and a Join button, a hand-made reminder and a Calendly call" />
+
+Shortcuts that work from anywhere: <kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> to nudge,
+<kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> to join the next call.
+
+### 7. Make it yours
+
+Under **Flight**, pick one of 20 jet colors and the plane size, and watch the live preview. Choose a
+scene and press **Nudge again** to replay it. You can also set how long it stays on screen, the
+direction it flies, which screen it uses, and an optional soft whoosh sound.
+
+<img src="docs/screenshots/steps/6-customize.png" width="560" alt="Flight settings: live preview with a violet jet, example scenes, 20 colors, plane size, time on screen, direction and screen" />
 
 ## Features
 
