@@ -223,13 +223,17 @@ summary { cursor: pointer; font: 700 18px/1.4 var(--display); padding-block: 14p
 details p { color: var(--muted); padding-bottom: 16px; }
 
 /* maker */
-.maker { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px; }
-.avatar-wrap { width: 104px; height: 104px; }
-.avatar-img { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; display: block; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent); }
+.maker { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 28px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 32px; }
+.avatar-wrap { width: 132px; height: 132px; align-self: start; }
+.avatar-img { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; display: block; border: 3px solid var(--surface); box-shadow: 0 0 0 2px var(--accent); }
 .avatar { width: 104px; height: 104px; border-radius: 50%; background: linear-gradient(160deg, #5cb2ff, #1270d6); color: #ffffff; display: grid; place-items: center; font: 800 36px/1 var(--display); letter-spacing: -0.02em; }
 .maker h2 { font-size: clamp(30px, 4.4vw, 44px); }
 .maker p { color: var(--muted); margin-top: 10px; max-width: 58ch; }
-.maker .site { font: 500 14px/1 var(--mono); color: var(--accent); }
+.maker .role { font: 500 13px/1.4 var(--mono); letter-spacing: 0.04em; color: var(--accent); margin-top: 8px; }
+.facts { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; max-width: 560px; }
+.facts li { display: grid; gap: 2px; color: var(--ink); font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+.facts span { font: 500 11px/1.2 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 520px) { .facts { grid-template-columns: minmax(0, 1fr); } }
 .maker .ctas { margin-top: 20px; }
 
 /* closing */
@@ -483,15 +487,22 @@ npm run dist:win<button class="copy" type="button">Copy</button></div>
       <p class="eyebrow">Who built this</p>
       <div class="maker">
         <div class="avatar-wrap">
-          <img class="avatar-img" id="makerPhoto" src="assets/jai-sudhakar.jpg" alt="Jai Sudhakar" width="104" height="104" hidden />
+          <img class="avatar-img" id="makerPhoto" src="assets/jai-sudhakar.jpg" alt="Jai Sudhakar" width="132" height="132" hidden />
           <div class="avatar" id="makerInitials" aria-hidden="true">JS</div>
         </div>
         <div>
           <h2 id="h-maker">Built by Jai Sudhakar</h2>
-          <p>Meetwing is designed and built by Jai Sudhakar. More projects and contact details are on the portfolio.</p>
-          <p class="site">onemandeveloper.com</p>
+          <p class="role">Full-stack eCommerce developer &middot; 8+ years</p>
+          <p>Shopify Partner building themes and apps, with Magento 2, PHP and Node. Now building Shopify apps and AI developer tools, including Meetwing.</p>
+          <ul class="facts" aria-label="Profile details">
+            <li><span>Company</span>Native Brand Technologies</li>
+            <li><span>Based in</span>Coimbatore, India</li>
+            <li><span>GitHub</span><a href="https://github.com/jaisudhakar" target="_blank" rel="noopener">@jaisudhakar</a></li>
+            <li><span>Portfolio</span><a href="https://onemandeveloper.com" target="_blank" rel="noopener">onemandeveloper.com</a></li>
+          </ul>
           <div class="ctas">
             <a class="btn primary" href="https://onemandeveloper.com" target="_blank" rel="noopener">Visit the portfolio</a>
+            <a class="btn" href="https://github.com/jaisudhakar" target="_blank" rel="noopener">GitHub profile</a>
             <a class="btn" href="https://github.com/jaisudhakar/meetwing" target="_blank" rel="noopener">View the source</a>
           </div>
         </div>
