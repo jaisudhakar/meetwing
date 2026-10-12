@@ -15,7 +15,7 @@ flies across your screen towing a card with what is next.</p>
   <a href="#built-by">Built by</a>
 </p>
 
-![A Meetwing reminder: the jet flies across the desktop towing a card that says "Starting in 10 min, Product sync with the team, Google Calendar"](docs/screenshots/flight.png)
+![A Meetwing reminder: the jet flies across the desktop towing a card that says Starting in 10 min, Product sync with the team, Google Calendar](docs/screenshots/flight.png)
 
 It lives in your menu bar / system tray, never steals focus or clicks, and needs no account.
 
